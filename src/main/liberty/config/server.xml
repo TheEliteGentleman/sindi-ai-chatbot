@@ -1,0 +1,16 @@
+<server description="Sample Liberty server">
+    <featureManager>
+    	<feature>jakartaee-10.0</feature>
+    	<feature>websocket-2.1</feature>
+    	<feature>microProfile-7.0</feature>
+    </featureManager>
+    
+    <webApplication location="${project.name}.war" contextRoot="/">
+  		<!-- enable visibility to third party apis -->
+  		<classloader apiTypeVisibility="+third-party"/>
+    </webApplication>
+    
+    <webContainer deferServletRequestListenerDestroyOnError="true" />
+    
+    <logging consoleLogLevel="INFO"/>
+</server>

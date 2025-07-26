@@ -1,0 +1,325 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>za.co.sindi</groupId>
+  <artifactId>sindi-ai-chatbot</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <name>Sindi AI ChatBot</name>
+
+    <developers>
+        <developer>
+            <name>Buhake Sindi</name>
+            <timezone>+2</timezone>
+        </developer>
+    </developers>
+	
+    <properties>
+        <project.report.sourceEncoding>UTF-8</project.report.sourceEncoding>
+        <microprofile-api.version>6.1</microprofile-api.version>
+        <compiler-plugin.version>3.13.0</compiler-plugin.version>
+        <war-plugin.version>3.4.0</war-plugin.version>
+		<!-- We need only javac to use the release parameter. OpenLiberty doesn't depend on maven-compiler-plugin.' -->
+        <maven.compiler.source>24</maven.compiler.source>
+		<maven.compiler.target>24</maven.compiler.target>
+
+		<!--Strictly for OpenLiberty-->
+        <liberty.env.ENGINE_CACHE_DIR>${project.build.directory}/liberty/wlp/usr/shared/resources/lib/</liberty.env.ENGINE_CACHE_DIR>
+        
+        <dev.langchain4j.core.version>1.1.0</dev.langchain4j.core.version>
+        <dev.langchain4j.version>1.1.0-rc1</dev.langchain4j.version>
+        <dev.langchain4j.community.version>1.1.0-beta7</dev.langchain4j.community.version>
+        <langchain4j.cdi.version>1.0.0-SNAPSHOT</langchain4j.cdi.version>
+        
+        <!-- Payara Micro -->
+        <payara.version>6.2025.7</payara.version>
+        <payara.home>payara6</payara.home>
+    </properties>
+	
+    <dependencyManagement>
+        <dependencies>
+			<dependency>
+				<groupId>jakarta.platform</groupId>
+				<artifactId>jakarta.jakartaee-api</artifactId>
+				<version>10.0.0</version>
+				<scope>provided</scope>
+			</dependency>
+			
+            <dependency>
+                <groupId>org.eclipse.microprofile</groupId>
+                <artifactId>microprofile</artifactId>
+                <version>${microprofile-api.version}</version>
+                <type>pom</type>
+                <scope>provided</scope>
+            </dependency>
+        
+        	<!--
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-api</artifactId>
+                <version>1.44.1</version>
+                <scope>provided</scope>
+            </dependency>
+			
+            <dependency>
+                <groupId>io.opentelemetry.instrumentation</groupId>
+                <artifactId>opentelemetry-instrumentation-annotations</artifactId>
+                <version>2.10.0</version>
+                <scope>provided</scope>
+            </dependency>
+            -->
+            <!--
+            <dependency>
+                <groupId>fish.payara.api</groupId>
+                <artifactId>payara-bom</artifactId>
+                <version>${payara.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        	-->
+            <dependency>
+                <groupId>dev.langchain4j.cdi</groupId>
+                <artifactId>langchain4j-cdi-build-compatible-ext</artifactId>
+                <version>${langchain4j.cdi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.langchain4j.cdi</groupId>
+                <artifactId>langchain4j-cdi-config</artifactId>
+                <version>${langchain4j.cdi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.langchain4j.cdi</groupId>
+                <artifactId>langchain4j-cdi-portable-ext</artifactId>
+                <version>${langchain4j.cdi.version}</version>
+            </dependency>
+            <!--
+            <dependency>
+                <groupId>dev.langchain4j.cdi</groupId>
+                <artifactId>langchain4j-cdi-fault-tolerance</artifactId>
+                <version>${langchain4j.cdi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.langchain4j.cdi</groupId>
+                <artifactId>langchain4j-cdi-telemetry</artifactId>
+                <version>${langchain4j.cdi.version}</version>
+            </dependency>
+            -->
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j</artifactId>
+                <version>${dev.langchain4j.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-azure-open-ai</artifactId>
+                <version>${dev.langchain4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-embeddings-all-minilm-l6-v2</artifactId>
+                <version>${dev.langchain4j.community.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/dev.langchain4j/langchain4j-google-ai-gemini -->
+			<dependency>
+			    <groupId>dev.langchain4j</groupId>
+			    <artifactId>langchain4j-google-ai-gemini</artifactId>
+			    <version>${dev.langchain4j.version}</version>
+			</dependency>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-hugging-face</artifactId>
+                <version>${dev.langchain4j.community.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-open-ai</artifactId>
+                <version>${dev.langchain4j.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.djl.huggingface</groupId>
+                <artifactId>tokenizers</artifactId>
+                <version>0.30.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-xml</artifactId>
+                <version>1.0.0-beta.3</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-jdk14</artifactId>
+                <version>2.0.17</version>
+                <scope>runtime</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+		<dependency>
+			<groupId>jakarta.platform</groupId>
+			<artifactId>jakarta.jakartaee-api</artifactId>
+		</dependency>
+		
+        <dependency>
+            <groupId>org.eclipse.microprofile</groupId>
+            <artifactId>microprofile</artifactId>
+            <type>pom</type>
+        </dependency>
+        <!--
+        <dependency>
+            <groupId>fish.payara.api</groupId>
+            <artifactId>payara-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        -->
+        <!--
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+        </dependency>
+		
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-instrumentation-annotations</artifactId>
+        </dependency>
+		-->
+		
+        <dependency>
+            <groupId>dev.langchain4j.cdi</groupId>
+            <artifactId>langchain4j-cdi-config</artifactId>
+        </dependency>
+		
+        <dependency>
+            <groupId>dev.langchain4j.cdi</groupId>
+            <artifactId>langchain4j-cdi-portable-ext</artifactId>
+        </dependency>
+		<!--
+		<dependency>
+            <groupId>dev.langchain4j.cdi</groupId>
+            <artifactId>langchain4j-cdi-fault-tolerance</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>dev.langchain4j.cdi</groupId>
+            <artifactId>langchain4j-cdi-telemetry</artifactId>
+        </dependency>
+		-->
+		<!-- langchain4j dependencies -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+        </dependency>
+        
+        <dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-google-ai-gemini</artifactId>
+		</dependency>
+        
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-azure-open-ai</artifactId>
+        </dependency>
+		
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings-all-minilm-l6-v2</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>ai.djl.huggingface</groupId>
+            <artifactId>tokenizers</artifactId>
+        </dependency>
+
+		<!-- SLF4J messages from langchain4j and Azure OpenAI SDK backed by JUL -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+        </dependency>
+    </dependencies>
+	
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <pluginManagement>
+            <plugins>
+            	<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${compiler-plugin.version}</version>
+					<configuration>
+						<parameters>true</parameters>
+						<source>${maven.compiler.source}</source>
+						<target>${maven.compiler.target}</target>
+					</configuration>
+				</plugin>
+
+				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.5.2</version>
+				</plugin>
+				
+				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-war-plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>${war-plugin.version}</version>
+					<configuration>
+						<failOnMissingWebXml>false</failOnMissingWebXml>
+					</configuration>
+				</plugin>
+				
+                <plugin>
+                    <groupId>io.openliberty.tools</groupId>
+                    <artifactId>liberty-maven-plugin</artifactId>
+                    <version>3.10.3</version>
+                    <configuration>
+                        <bootstrapProperties>
+                            <project.name>${project.build.finalName}</project.name>
+                        </bootstrapProperties>
+                    </configuration>
+                </plugin>
+                
+                <!-- Execute 'mvn clean package payara-server:dev' to run the application. -->
+            	<plugin>
+                    <groupId>fish.payara.maven.plugins</groupId>
+                    <artifactId>payara-server-maven-plugin</artifactId>
+                    <version>1.0.0-Alpha2</version>
+                    <configuration>
+                        <payaraServerVersion>${payara.version}</payaraServerVersion>
+	                    <contextRoot>/${project.build.finalName}</contextRoot>
+	                    <autoDeploy>true</autoDeploy>
+	                    <liveReload>true</liveReload>
+	                    <debug>true</debug>
+	                    <exploded>true</exploded>
+                    </configuration>
+            	</plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+			
+            <plugin>
+                <groupId>io.openliberty.tools</groupId>
+                <artifactId>liberty-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
