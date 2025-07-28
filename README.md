@@ -13,7 +13,7 @@ The Java application is based on the Jakarta 10 WebSocket specification.
 1. Copy this demo repo URL and clone this branch (using `git clone`).
 2. Open the terminal/command line and get to the folder `cd sindi-ai-chatbot`.
 3. Open the file `microprofile-config.properties`, found in `src/main/resources/META-INF/microprofile-config.properties`
-4. Add your Gemini API key as a parameter value for `dev.langchain4j.plugin.chat-model.config.api-key`.
+4. Add your Gemini API key as a parameter value for `dev.langchain4j.plugin.chat-model.config.api-key` key.
 5. Return to the project root folder (in this case `sindi-ai-chatbot`).
 6. Build the project with Maven.
 
