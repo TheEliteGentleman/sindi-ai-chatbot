@@ -10,6 +10,7 @@ A demo chatbot showcasing the power of Langchain4J and Langchain4J-CDI
 ### Application requirements.
 
 The Java application is based on the Jakarta 10 WebSocket specification.
+The AI backend integrates with Google Gemini, using model `gemini-2.5-pro`.
 
 ### How to build this demo?
 1. Copy this demo repo URL and clone this branch (using `git clone`).
