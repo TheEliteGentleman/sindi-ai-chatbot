@@ -361,6 +361,7 @@
 	    </div>
 	
 	    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
 	    <script>
 	        class ChatApplication {
 	            constructor() {
@@ -376,6 +377,47 @@
 	                this.updateUserInterface();
 	                this.connect();
 	            }
+				
+				buildWebSocketURL() {
+					const location = window.location;
+					const isSecure = location.protocol === 'https:';
+					const protocol = isSecure ? 'wss:' : 'ws:';
+					const hostname = location.hostname;
+					
+					let wsUrl;
+					let port;
+					let contextPath = '';
+					
+					// Determine WebSocket URL based on environment
+					if (hostname === 'localhost' || hostname === '127.0.0.1') {
+						// Development environment
+						port = '8080'; // Common Jakarta EE development port
+						contextPath = '/sindi-ai-chatbot'; // Your Jakarta EE application context
+						wsUrl = `${protocol}//${hostname}:${port}${contextPath}/chat`;
+					} else {
+						// Production/staging environment
+						// Use same host and port as current page
+						port = location.port;
+						
+						// Extract context path from current URL if exists
+						const pathParts = location.pathname.split('/');
+						if (pathParts.length > 1 && pathParts[1]) {
+							contextPath = `/${pathParts[1]}`;
+						}
+						
+						// Build WebSocket URL
+						wsUrl = `${protocol}//${hostname}`;
+						if (port && port !== '80' && port !== '443') {
+							wsUrl += `:${port}`;
+						}
+						wsUrl += `${contextPath}/chat`;
+					}
+					
+					wsUrl += `/${this.username}`;
+					
+					console.log('Built WebSocket URL:', wsUrl);
+					return wsUrl;
+				}
 	
 	            getUsernameFromUrl() {
 	                const urlParams = new URLSearchParams(window.location.search);
@@ -455,7 +497,8 @@
 	            connect() {
 	                try {
 	                    // Update this URL to match your Jakarta EE WebSocket endpoint
-	                    const wsUrl = 'ws://localhost:8080/sindi-ai-chatbot/chat/' + this.username;
+	                    //const wsUrl = 'ws://localhost:8080/sindi-ai-chatbot/chat/' + this.username;
+						const wsUrl = this.buildWebSocketURL();
 	                    
 	                    // For development/testing, we'll simulate the connection
 	                    //this.simulateConnection();
@@ -642,7 +685,8 @@
 	                
 	                const contentP = document.createElement('p');
 	                contentP.className = 'message-content';
-	                contentP.textContent = messageData.content;
+	                //contentP.textContent = messageData.content;
+					contentP.innerHTML = this.convertMarkdownInlineToHTML(messageData.content);
 	                
 	                const timeDiv = document.createElement('div');
 	                timeDiv.className = 'message-time';
@@ -708,6 +752,30 @@
 	                    minute: '2-digit'
 	                });
 	            }
+				
+				convertMarkdownInlineToHTML(markdownText) {
+					let htmlText = markdownText;
+
+					/*
+					// Convert bold: **text** or __text__ to <strong>text</strong>
+					htmlText = htmlText.replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>');
+
+					// Convert italics: *text* or _text_ to <em>text</em>
+					htmlText = htmlText.replace(/(\*|_)(.*?)\1/g, '<em>$2</em>');
+
+					// Convert inline code: `code` to <code>code</code>
+					htmlText = htmlText.replace(/`(.*?)`/g, '<code>$1</code>');
+
+					// Convert links: [Link Text](url) to <a href="url">Link Text</a>
+					htmlText = htmlText.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2">$1</a>');
+
+					// Convert basic line breaks to <br> for an inline text block effect
+					// This makes single line breaks render as new lines in HTML, useful for "inline text block" scenarios
+					htmlText = htmlText.replace(/\n/g, '<br>');
+					*/
+					htmlText = marked.parse(markdownText);
+					return htmlText;
+				}
 	
 	            scrollToBottom() {
 	                setTimeout(() => {

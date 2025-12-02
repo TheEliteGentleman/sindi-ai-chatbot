@@ -111,7 +111,8 @@ public class ChatEndpoint {
     	String responseFromAI = getChatAiService().chat(message.getContent());
         ChatResponse response = new ChatResponse("message", responseFromAI, "assistant");
         response.setReplyToMessageId(message.getMessageId());
-        
+        hideTypingIndicator(message, session);
+		
         sendMessageToSession(session, response);
         
         // Optionally broadcast to all users
@@ -123,6 +124,19 @@ public class ChatEndpoint {
         // Broadcast typing status to other users
         ChatResponse typingResponse = new ChatResponse("typing", 
             message.getUsername() + " is typing...", "system");
+        
+        // Send to all sessions except the sender
+        sessions.stream()
+            .filter(s -> !s.equals(session))
+            .forEach(s -> sendMessageToSession(s, typingResponse));
+    }
+	
+	// Hide typing indicators
+    private void hideTypingIndicator(ChatMessage message, Session session) {
+        // Broadcast typing status to other users
+        ChatResponse typingResponse = new ChatResponse("typing", 
+            "", "system");
+		typingResponse.setTyping(false);
         
         // Send to all sessions except the sender
         sessions.stream()
