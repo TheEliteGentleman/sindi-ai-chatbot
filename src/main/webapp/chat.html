@@ -391,8 +391,8 @@
 					// Determine WebSocket URL based on environment
 					if (hostname === 'localhost' || hostname === '127.0.0.1') {
 						// Development environment
-						port = '8080'; // Common Jakarta EE development port
-						contextPath = '/sindi-ai-chatbot'; // Your Jakarta EE application context
+						port = location.port; // '8080'; // Common Jakarta EE development port
+						//contextPath = '/sindi-ai-chatbot'; // Your Jakarta EE application context
 						wsUrl = `${protocol}//${hostname}:${port}${contextPath}/chat`;
 					} else {
 						// Production/staging environment

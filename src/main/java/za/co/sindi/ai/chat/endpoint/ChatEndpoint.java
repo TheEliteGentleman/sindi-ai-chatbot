@@ -8,6 +8,12 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import dev.langchain4j.memory.ChatMemory;
+import dev.langchain4j.memory.chat.ChatMemoryProvider;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.literal.NamedLiteral;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 import jakarta.websocket.CloseReason;
@@ -24,6 +30,7 @@ import za.co.sindi.ai.chat.util.JSONObjectMapper;
  * @author Buhake Sindi
  * @since 25 July 2025
  */
+@ApplicationScoped
 //@ActivateRequestContext
 @ServerEndpoint(value = "/chat/{username}",
 				encoders = {ChatResponseEncoder.class}, 
@@ -44,6 +51,18 @@ public class ChatEndpoint {
     
     // Store user sessions mapping
     private static final ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<>();
+    
+    private static final String CHAT_MEMORY_CDI_NAME = "chat-ai-service-memory";
+
+    @Produces
+    private ChatMemoryProvider chatMemoryProvider;
+
+    @PostConstruct
+    private void init() {
+        chatMemoryProvider = sessionId -> CDI.current()
+                .select(ChatMemory.class, NamedLiteral.of(CHAT_MEMORY_CDI_NAME))
+                .get();
+    }
 
     @OnOpen
     public void onOpen(Session session) {
@@ -108,7 +127,7 @@ public class ChatEndpoint {
     private void handleChatMessage(ChatMessage message, Session session) {
         // Echo the message back with assistant response
     	handleTypingIndicator(message, session);
-    	String responseFromAI = getChatAiService().chat(message.getContent());
+    	String responseFromAI = getChatAiService().chat(session.getId(), message.getContent());
         ChatResponse response = new ChatResponse("message", responseFromAI, "assistant");
         response.setReplyToMessageId(message.getMessageId());
         hideTypingIndicator(message, session);
